@@ -3,14 +3,14 @@
 // php v. 8.1.6
 
 
-$servareName = "DESKTOP-GPP6M5J";
-$userId = "DESKTOP-GPP6M5J";
-$pass = "komodoensis";
-$dbNeme = "RendicionGasto";
+$servareName = "DESKTOP-S4UV3CT";
+$userId = "sa";
+$pass = "admin12345";
+$dbNeme = "formulario";
 
 
 try {
-    $conn = new PDO("sqlsrv:server=$servareName ; Database=RendicionGasto", "", "");
+    $conn = new PDO("sqlsrv:server=$servareName ; Database=formulario", "", "");
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (Exception $e) {
     die( print_r( $e->getMessage() ) );   
