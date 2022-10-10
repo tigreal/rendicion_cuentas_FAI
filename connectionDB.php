@@ -1,19 +1,5 @@
 <?php
-
-// php v. 8.1.6
-
-define('DB_HOST', 'localhost');
-define('DB_USER', 'sa');
-define('DB_PASSWORD', 'admin12345');
-define('DB_NAME', 'formulario');
-define('DB_SERVER_NAME','DESKTOP-GPP6M5J\MSSQLSERVER2019');
-
-
-$servareName = "DESKTOP-GPP6M5J\MSSQLSERVER2019";
-$userId = "sa";
-$pass = "admin12345";
-$dbNeme = "formulario";
-
+require_once("config/database.php");
 // SQL connection whit globales 
 // remeber close of a double quotation marks .""
 try {

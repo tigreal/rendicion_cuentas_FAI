@@ -58,7 +58,7 @@ if(isset($_SESSION['start']))
     <div class="container"><br><br>
       <div class="row">
 
-      <!-- Login -->
+      <!-- Login
         <div class="col-sm-4 col-sm-offset-1">
           <div class="row">
             <div class="col-sm-12 text-center">
@@ -77,9 +77,9 @@ if(isset($_SESSION['start']))
             </div>
             <button type="button" class="btn btn-success" onclick="loginCheck()" value="Login">Ingresar</button>
           </form>
-        </div>
+        </div> -->
 
-        <!-- Register
+        Registro
         <div class="col-sm-4 col-sm-offset-2">
           <div class="row">
             <div class="col-sm-12 text-center">
@@ -93,27 +93,21 @@ if(isset($_SESSION['start']))
               <input type="text" name="name" class="form-control" id="name" placeholder="Cosme Fulanito">
             </div>
             <div class="form-group">
-              <label for="email" id="emailLabel">Correo</label>
-              <input type="email" name="email" id="email" class="form-control" placeholder="miCorreo@algo.com">
+              <label for="ci" id="ci">Carnet De Identidad</label>
+              <input type="text" name="ci" id="ci" class="form-control" placeholder="xxxxxxxxx">
             </div>
-            <div class="form-group">
-              <label id="userLabel">Nombre de Usuario</label>
-              <input type="text" name="username" id="username" class="form-control" placeholder="Usuario">
-            </div>
-            <div class="form-group">
-              <label id="mobLabel">Telefono.</label>
-              <input type="text" name="mob" id="mob" class="form-control" placeholder="7******">
-            </div>
+            
+            
             <div class="form-group">
               <label for="passRegister" id="passLabelRegister">Contraseña</label>
               <input type="password" name="passRegister" id="passRegister" class="form-control" class="form-control" placeholder="Contraseña">
             </div>
-            <button type="button" class="btn btn-success" onclick="registerCheck()" value="Register">Register</button>
+            <button type="button" class="btn btn-success" onclick="registerCheck()" value="Register">Registrar</button>
           </form>
         </div>
       </div>
       <br><br><br>
-    </div> -->
+    </div>
 
     <!-- Modal -->
     <div class="modal fade" id="myModal" role="dialog">
