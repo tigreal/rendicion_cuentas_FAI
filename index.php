@@ -90,12 +90,7 @@
           </tr>
           <tr>
             <td><label for="">Destino de fondos:</label></td>
-            <td><select name="cars" id="cars">
-                <option value="volvo">Compra de tinta</option>
-                <option value="saab">Compra de alimento</option>
-                <option value="opel">Pasajes</option>
-                
-              </select></td>
+            <td><input type="text" ></td>
 
           </tr>
           
