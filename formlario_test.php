@@ -70,4 +70,12 @@ class formularioRendicionCuentas extends formulario
         }
     }
     
+
+}
+class saveFormToDb{
+
+function __construct($ci,$fecha,$importe,$destinoDeFondosDescripcion)
+{
+    
+}
 }
