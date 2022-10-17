@@ -26,16 +26,17 @@ class Login
      */
     public function __construct()
     {
+
+        $info_conexion = array("Database" => DB_NAME, "UID" => DB_USER, "PWD" => DB_PASSWORD);
         $this->flag = 0;
-        $this->connect = new PDO("sqlsrv:server=".DB_SERVER_NAME."; Database=".DB_NAME."", DB_USER, DB_PASSWORD);
-        $this->error = array();
-        try {
-            $conn = new PDO("sqlsrv:server=".DB_SERVER_NAME."; Database=".DB_NAME."", DB_USER, DB_PASSWORD);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (Exception $e) {
-            die( print_r( $e->getMessage() ) );   
+        $this->connect = sqlsrv_connect(
+            DB_SERVER_NAME,
+            $info_conexion
+        );
+        if (!$this->connect) {
+            die(print_r(sqlsrv_errors(), true));
         }
-        
+        $this->error = array();
     }
 
     /**
@@ -47,38 +48,62 @@ class Login
      */
     public function authLogin($data)
     {
-         $data = $this->emptyValue($data);
+        $data = $this->emptyValue($data);
 
-         $login = $data["login"];
-         $password = $data["passLogin"];
+        $login = $data["login"];
+        $password = $data["passLogin"];
 
-        // if (preg_match("/^.+[@]{1}.+$/", $login)) {
-        //     if (filter_var($login, FILTER_VALIDATE_EMAIL) == false) {
-        //         $this->onError("login", " *Enter correct Email address");
-        //     }
-        // }
+        if (preg_match("/^[0-9]+$/", $login)) {
+            if (filter_var($login, FILTER_VALIDATE_EMAIL) == false) {
+                $this->onError("login", " *Introdusca su carnet correctamente");
+            }
+        }
 
         if ($this->flag == 0) {
-            $password = md5($password);
-            $query = "
-            	SELECT * FROM login WHERE email = '$login' or username = '$login'
-            ";
-            if ($result = $this->connect->query($query)) {
-                if ($result->num_rows > 0) {
+            $password = $password;
+            $query = "select top 1 * from login where carnet=" . $login . "";
+            $params = array();
+            // SQLSRV_CURSOR_KEYSET https://learn.microsoft.com/en-us/sql/connect/php/cursor-types-sqlsrv-driver?view=sql-server-ver16
+            $options =  array("Scrollable" => SQLSRV_CURSOR_KEYSET);
+            // only return false if a parameters are bad
+            $declaracion = sqlsrv_prepare($this->connect, $query,$params,$options);
+            // only return false if the query is bad formating or eny problem whit the query
+            $res = sqlsrv_execute($declaracion);
 
-                    $row = $result->fetch_assoc();
-                    $loginID = $row['login_id'];
-                    $query = "
-                    	SELECT id FROM register WHERE
-                    	id = '$loginID' and
-                    	password = '$password'
+            if ($declaracion && $res) {
+
+                $num_rows = sqlsrv_num_rows($declaracion);
+                // echo "numero de rows:";
+                // var_dump($num_rows);
+                $row = sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_ASSOC);
+                // var_dump($row);
+
+                if ($num_rows > 0) {
+                    // sqlsrv_close($this->connect);
+
+                    $loginID = $row['carnet'];
+                    $query= "
+                    	SELECT name FROM login WHERE
+                    	carnet = '$loginID' and
+                    	clave = '$password'
                     ";
-                    if ($result = $this->connect->query($query)) {
-                        if ($result->num_rows > 0) {
-                            Session::put('start', $loginID);
+                    $declaracion = sqlsrv_prepare($this->connect, $query,$params,$options);
+                    $res = sqlsrv_execute($declaracion);
+                    $num_rows = sqlsrv_num_rows($declaracion);
+                    // echo("nemro de rows:");
+                    // var_dump($num_rows);
+                    // var_dump($declaracion);
+                    if ($num_rows>0) {
+                        sqlsrv_execute($declaracion);
+                        $row = sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_ASSOC);
+                      
+                        // echo "row:";
+                        // var_dump($row);
+                        if ($num_rows > 0) {
+                            // Session::put('start', $loginID);
                             return json_encode(
                                 [
-                                "location" => URL . "/account.php"
+                                    "location" => URL . "/formulario.php"
                                 ]
                             );
                         }
@@ -87,16 +112,27 @@ class Login
                     }
                     return json_encode(
                         [
-                        "Error" => "No estas registrado, " . $this->connect->error
+                            "Error" => "No estas registrado, "
+                            // "Error" => "No estas registrado, " . $this->connect->error
                         ]
                     );
+
+                    $this->onError("login", " *Usuario Invalido");
+                    return json_encode($this->error);
+                } else {
+                    return json_encode(
+                        [
+                            "Error" => "No estas registrado, "
+                            // "Error" => "No estas registrado, " . $this->connect->error
+                        ]
+                    );
+                    // die(print_r(sqlsrv_errors(), true));
                 }
-                $this->onError("login", " *Invalid username or email");
-                return json_encode($this->error);
             }
             return json_encode(
                 [
-                "Error" => "You are not registered, " . $this->connect->error
+                    "Error" => "No estas registrado, " 
+                    // "Error" => "No estas registrado, " . $this->connect->error
                 ]
             );
         } else {
@@ -118,10 +154,10 @@ class Login
         $this->error = array_merge(
             $this->error,
             [
-            [
-            "key" => $key,
-            "value" => $value
-            ]
+                [
+                    "key" => $key,
+                    "value" => $value
+                ]
             ]
         );
     }
@@ -136,8 +172,8 @@ class Login
     public function emptyValue($data)
     {
         $errorCode = array(
-            "login" => " *Enter the login field",
-            "passLogin" => " *Enter the password"
+            "login" => " *Introdusca el Carnet de Identidad",
+            "passLogin" => " *Introdusca la clave"
         );
 
         foreach ($data as $key => $value) {

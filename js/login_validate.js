@@ -104,14 +104,15 @@ function loginCheck()
         };
 
         q = "q=" + JSON.stringify(q);
-        // console.log(q);
+        // console.log("q:"+q);
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function()
         {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
             {
+                // console.log(xmlhttp.responseText);
                 var result = JSON.parse(xmlhttp.responseText);
-                // console.log(result);
+                console.log("result:"+result);
                 if(result["location"])
                 {
                     location.href = result["location"];

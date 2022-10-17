@@ -1,9 +1,9 @@
 <?php
 
 // namespace AnkitJain\RegistrationModule;
-// require (dirname(__DIR__) . '/vendor/autoload.php');
+// require (dirname(__DIR__) . '/../vendor/autoload.php');
 // use AnkitJain\RegistrationModule\Login;
-require_once('source/Login.php');
+require_once(__DIR__).'/../source/Login.php';
 if(isset($_POST['q']))
 {
 	$loginField = json_decode($_POST['q']);
