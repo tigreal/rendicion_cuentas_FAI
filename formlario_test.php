@@ -20,8 +20,8 @@ class formularioRendicionCuentas extends formulario
 
     protected $saldo_adepositar;
     protected $reintegro;
-    protected $importeConCheque;
-    protected $importeEfectivo;
+
+
     protected $importeTotal;
     function __construct($importeConCheque = 0, $importeEfectivo = 0, $importeTotal, $destinoDeFondosDescripcion, $nombre_usuario, $proyecto, $fecha, $numero_formulario, $total = 0, $area = "S/N", $unidad = "S/N",)
     {
