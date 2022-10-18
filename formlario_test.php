@@ -69,13 +69,11 @@ class formularioRendicionCuentas extends formulario
             print_r($e);
         }
     }
-    
-
 }
-class saveFormToDb{
-
-function __construct($ci,$fecha,$importe,$destinoDeFondosDescripcion)
+class saveFormToDb
 {
-    
-}
+
+    function __construct($ci, $fecha, $importe, $destinoDeFondosDescripcion)
+    {
+    }
 }
