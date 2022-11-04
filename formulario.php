@@ -148,16 +148,16 @@
         <tr class="detail-row">
           <td>
             <!-- datePicker campo -->
-            <input name="datePicker" class="form-control" />
+            <input name="datePicker" class="form-control" type="text" id="field_date_1" />
           </td>
           <td>
-            <input name="factura_number[]" type="text" />
+            <input name="factura_number[]" type="text" class="form-control" id="field_bill_1" />
           </td>
           <td>
-            <input name="detalle_factura[]" type="text" />
+            <input name="detalle_factura[]" type="text" class="form-control" id="field_bill_detalle_1" />
           </td>
           <td>
-            <input name="monto_factura[]" type="number" />
+            <input name="monto_factura[]" type="number" class="form-control monto_row_fai" id="field_monto_1" />
           </td>
           <td>
             <input name="btn-agregar" type="button" value="Agregar" />
@@ -217,6 +217,40 @@
         </tr>
       </tbody>
     </table> -->
+    <div class="">
+
+      <table class="footer-total" border="1">
+        <!-- <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead> -->
+        <tbody>
+
+
+
+          <tr>
+            <!-- <td></td>
+              <td></td> -->
+            <td>Total</td>
+            <td><input class="subtotal" type='text' id='subtotal' name='subtotal' readonly /></td>
+          </tr>
+          <tr>
+            <td>Saldo a depositar</td>
+            <td><input class="return-nomey" type='text' id='return-nomey' name='return-nomey' readonly /></td>
+          </tr>
+          <tr>
+            <td>Reintegro</td>
+            <td><input class="" type='text' id='' name='' readonly /></td>
+          </tr>
+        </tbody>
+      </table>
+
+
+    </div>
   </div>
   <!-- javascript configuracion of the TimePicker -->
   <script src="js/dtsel.js"></script>
@@ -236,26 +270,71 @@
     //   showDate: false,
     // });
   </script>
-    
+
   <script>
     document.getElementById("docNumber").innerHTML += Math.floor(Math.random() * 10);
     document.getElementById("fecha").innerHTML += Date();
   </script>
-<!-- method clone this metodo permite introducir las new rows -->
+  <!-- method clone this metodo permite introducir las new rows -->
   <script>
-    $(document).ready(function(){
-      $('body').on("click","input[name='btn-agregar']",function(e){
+    $(document).ready(function() {
+      $('body').on("click", "input[name='btn-agregar']", function(e) {
         // console.log(e.target.nodeName);
-        var cloned_el=$(e.target).closest(".detail-row").clone(true);
-        $(e.target).closest(".cuerpo-detalle").last().append(cloned_el).find("input[name='btn-eliminar']:not(:first)").prop("disabled",false);
+        var numerillo = $(e.target).closest(".cuerpo-detalle").find(".detail-row").length + 1;
+        // console.log("index:"+numerillo);
+        var cloned_el = $(e.target).closest(".detail-row").clone(true);
+        $(e.target).closest(".cuerpo-detalle").last().append(cloned_el).find("input[name='btn-eliminar']:not(:first)").prop("disabled", false);
+        // (cloned_el).find("input[name='btn-agregar']:not(:first)").prop("disabled");
+        $("input[name='btn-agregar']:not(:first)").prop({
+          "disabled": true
+        });
+        console.log("boton estado:" + $("input[name='btn-agregar']").prop("disabled"));
+        // para limpiar los fields del agregar
+        $(e.target).closest(".detail-row").find('td').find("input").not(":button, :submit").val("");
+        // put index 
+        $(e.target).closest(".cuerpo-detalle").find(".detail-row").last().find("input[name='datePicker']").attr("id", "field_date_" + numerillo);
+
+        $(e.target).closest(".cuerpo-detalle").find(".detail-row").last().find("input[name='factura_number[]']").attr("id", "field_bill_" + numerillo);
+
+        $(e.target).closest(".cuerpo-detalle").find(".detail-row").last().find("input[name='detalle_factura[]']").attr("id", "field_bill_detalle_" + numerillo);
+
+        $(e.target).closest(".cuerpo-detalle").find(".detail-row").last().find("input[name='monto_factura[]']").attr("id", "field_monto_" + numerillo);
 
 
-        
+
       });
 
     });
-    
+    // boton delete para deletar el row
+    $("body").on("click", "input[name='btn-eliminar']", function() {
+      $(this).closest(".detail-row").remove();
+      // this event makes a refresh to result
+      $(".monto_row_fai").first().val("0").trigger("input");
 
+    });
+    // calcular el monto total or calculate tha total amount
+    $("body").on("input", "input.monto_row_fai", function() {
+      var total = 0;
+      $(".monto_row_fai").each(function() {
+        monto = $(this).val()
+        if (isNaN(parseInt(monto))) {
+
+          total += 0;
+        } else {
+
+          total += parseFloat($(this).val());
+        }
+
+        $(".subtotal").val(total);
+
+        console.log("total: " + total.toFixed(2));
+      });
+
+    });
+    function calcularReturnMoney(monto){
+        
+
+    }
   </script>
 
 </body>
