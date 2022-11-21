@@ -30,7 +30,7 @@ function login()
     var re = /^[0-9]$/;
     var val = $("#login").val();
     $("input#login").prev("span").remove();
-    // console.log(val);
+     console.log("loginVal:"+val);
     if(val === "")
     {
         valLogin = 1;
@@ -112,7 +112,7 @@ function loginCheck()
             {
                 // console.log(xmlhttp.responseText);
                 var result = JSON.parse(xmlhttp.responseText);
-                console.log("result:"+result);
+                // console.log("result:"+result);
                 if(result["location"])
                 {
                     location.href = result["location"];

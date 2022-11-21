@@ -54,7 +54,7 @@ class Login
         $password = $data["passLogin"];
 
         if (preg_match("/^[0-9]+$/", $login)) {
-            if (filter_var($login, FILTER_VALIDATE_EMAIL) == false) {
+            if (filter_var($login, FILTER_VALIDATE_INT) == false) {
                 $this->onError("login", " *Introdusca su carnet correctamente");
             }
         }

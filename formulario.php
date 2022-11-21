@@ -113,7 +113,7 @@
             </td>
             <td>
               <label for="">Importe:</label>
-              <input type="text">
+              <input type="text" class="txtimporte" id="txtimporte" name="txtimporte">
             </td>
           </tr>
           <tr>
@@ -240,11 +240,11 @@
           </tr>
           <tr>
             <td>Saldo a depositar</td>
-            <td><input class="return-nomey" type='text' id='return-nomey' name='return-nomey' readonly /></td>
+            <td><input class="return-money" type='text' id='return-money' name='return-money' readonly /></td>
           </tr>
           <tr>
             <td>Reintegro</td>
-            <td><input class="" type='text' id='' name='' readonly /></td>
+            <td><input class="reintegro" type='text' id='reintegro' name='reintegro' readonly /></td>
           </tr>
         </tbody>
       </table>
@@ -314,8 +314,11 @@
     });
     // calcular el monto total or calculate tha total amount
     $("body").on("input", "input.monto_row_fai", function() {
+      // .on("input", "input.monto_row_fai", function()
       var total = 0;
+
       $(".monto_row_fai").each(function() {
+
         monto = $(this).val()
         if (isNaN(parseInt(monto))) {
 
@@ -325,14 +328,64 @@
           total += parseFloat($(this).val());
         }
 
-        $(".subtotal").val(total);
 
-        console.log("total: " + total.toFixed(2));
+
       });
+      $(".subtotal").val(total.toFixed(2));
+      calcularReturnMoney();
+      returnMyMomey();
+
+      console.log("total$$: " + total.toFixed(2));
 
     });
-    function calcularReturnMoney(monto){
-        
+
+    // retun money
+    $("body").on("input", "input.txtimporte", function() {
+      amount = parseInt($(this).val());
+      console.log("importe: " + amount);
+      if (isNaN(parseInt(amount))) {
+
+      } else if (amount < 0) {
+        // $(this).val("0");
+      } else {
+        calcularReturnMoney(amount);
+        returnMyMomey();
+
+      }
+    });
+
+    function calcularReturnMoney() {
+      importe = $(".txtimporte").val();
+      subtotal = $(".subtotal").val();
+      console.log("importe isnan:" + parseInt(importe));
+      // console.log("importe: " + importe + "total:" + subtotal);
+      if (!isNaN(parseInt(importe))) {
+        if (parseInt(importe) <= parseInt(subtotal)) {
+          $(".return-money").val("0");
+
+        } else {
+          totalreturn = importe - subtotal;
+          $(".return-money").val(totalreturn.toFixed(2));
+          console.log("retunmoney:" + totalreturn);
+
+        }
+      }
+
+    }
+
+    function returnMyMomey() {
+      importMoney = parseFloat($(".txtimporte").val());
+      totalMoney = parseFloat($(".subtotal").val());
+      if (!isNaN(importMoney) && !isNaN(totalMoney)) {
+
+        if(totalMoney>importMoney){
+          returnM=totalMoney - importMoney;
+          $(".reintegro").val(returnM.toFixed(2));
+
+        }else{
+          $(".reintegro").val("0");
+        }
+      }
 
     }
   </script>
