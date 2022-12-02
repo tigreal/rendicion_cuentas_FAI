@@ -1,3 +1,61 @@
+<?php
+session_start();
+// echo dirname(__DIR__);
+require_once dirname(__DIR__) . '/ArcoIrisRediCuentas/config/database.php';
+
+class datosFormulario
+{
+  protected $erro;
+  public $connect;
+  protected $loginID;
+  public $row;
+  function __construct()
+  {
+    $info_conexion = array("Database" => DB_NAME2, "UID" => DB_USER, "PWD" => DB_PASSWORD);
+    // $this->flag = 0;
+    $this->connect = sqlsrv_connect(
+      DB_SERVER_NAME,
+      $info_conexion
+    );
+    if (!$this->connect) {
+      die(print_r(sqlsrv_errors(), true));
+    }
+    $this->error = array();
+    
+  }
+  public function setDatos($loginID)
+  {
+    // $loginID
+    // " .  . "
+    $params = array();
+    $query = "select firstName,lastName,U_ApMaterno,PrjName,jobTitle,U_proyecto from OHEM join OPRJ on OHEM.U_proyecto = OPRJ.PrjCode
+    where govID='".$loginID."'";
+    $options =  array("Scrollable" => SQLSRV_CURSOR_KEYSET);
+    // only return false if a parameters are bad
+    $declaracion = sqlsrv_prepare($this->connect, $query, $params, $options);
+    $res = sqlsrv_execute($declaracion);
+    // $num_rows = sqlsrv_num_rows($declaracion);
+    var_dump($res);
+    var_dump($declaracion);
+
+    if ($res && $declaracion) {
+      echo "chamaco";
+      $this->row = sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_ASSOC);
+      var_dump($this->row);
+    }
+  }
+}
+$loginID=$_SESSION["ci"];
+echo $loginID;
+$ejmDatosForm= new datosFormulario();
+$ejmDatosForm->setDatos($loginID);
+echo "fadfasd";
+
+
+
+
+
+?>
 <!DOCTYPE html>
 <html>
 
@@ -67,7 +125,7 @@
           <tr>
             <td>
               <label for="lbl_nombre">nombre:</label>
-              <input type="text" id="full_name">
+              <input type="text" id="full_name" value="<?php echo $ejmDatosForm->row["firstName"]." ".$ejmDatosForm->row["lastName"]." ".$ejmDatosForm->row["U_ApMaterno"]?>">
             </td>
 
             <td>
@@ -80,25 +138,15 @@
           <tr>
             <td>
               <label for="">area:</label>
-              <select name="cars" id="cars">
-                <option value="volvo">Coordinador</option>
-                <option value="saab">Educador</option>
-                <option value="opel">Trabajo Social</option>
-
-              </select>
+              <input type="text" value="<?php echo $ejmDatosForm->row["jobTitle"]?>">
             </td>
             <td>
               <label for="">Unidad:</label>
               <input type="text">
             </td>
             <td>
-              <label for="">area:</label>
-              <select name="cars" id="cars">
-                <option value="volvo">Esperanza</option>
-                <option value="saab">Periferica</option>
-                <option value="opel">Casa de Paso</option>
-
-              </select>
+              <label for="">Proyecto:</label>
+              <input type="text" value="<?php echo $ejmDatosForm->row["PrjName"]?>">
             </td>
           </tr>
           <tr>
@@ -378,11 +426,11 @@
       totalMoney = parseFloat($(".subtotal").val());
       if (!isNaN(importMoney) && !isNaN(totalMoney)) {
 
-        if(totalMoney>importMoney){
-          returnM=totalMoney - importMoney;
+        if (totalMoney > importMoney) {
+          returnM = totalMoney - importMoney;
           $(".reintegro").val(returnM.toFixed(2));
 
-        }else{
+        } else {
           $(".reintegro").val("0");
         }
       }
