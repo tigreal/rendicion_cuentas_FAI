@@ -154,22 +154,22 @@ $ejmDatosForm->setDatos($loginID);
 
 
   <div class="container">
-  <form name="formulario_rendi" action="saveForm.php" method="POST">
-    <div>
-      <label for="NumeroDocumet">
-        <h3 id=docNumber>Documento Nº:<?php $ejmDatosForm->getNumeroFormulario();
-                                      echo $ejmDatosForm->row3["numero_formulario_temp"]; ?></h3>
-      </label>
-    </div>
+    <form name="formulario_rendi" action="saveForm.php" method="POST">
+      <div>
+        <label for="NumeroDocumet">
+          <h3 id=docNumber>Documento Nº:<?php $ejmDatosForm->getNumeroFormulario();
+                                        echo $ejmDatosForm->row3["numero_formulario_temp"]; ?></h3>
+        </label>
+      </div>
 
-    <div class="titulo">
-      <h1>RENDICIÓN DE CUENTAS</h1>
+      <div class="titulo">
+        <h1>RENDICIÓN DE CUENTAS</h1>
 
-    </div>
-    <div class="titulo">
-      <h2>Coordinadores</h2>
-    </div>
-    
+      </div>
+      <div class="titulo">
+        <h2>Coordinadores</h2>
+      </div>
+
       <div class="container-informacion">
 
         <table border="1" id="table_main">
@@ -177,20 +177,21 @@ $ejmDatosForm->setDatos($loginID);
             <tr>
               <td>
                 <label for="lbl_nombre">nombre:</label>
-                <input type="text" id="full_name" value="<?php echo $ejmDatosForm->row["firstName"] . " " . $ejmDatosForm->row["lastName"] . " " . $ejmDatosForm->row["U_ApMaterno"]; ?>">
+                <input type="text" name="full_personal_data[]"  value="<?php echo $ejmDatosForm->row["firstName"] . " " . $ejmDatosForm->row["lastName"] . " " . $ejmDatosForm->row["U_ApMaterno"]; ?>">
               </td>
 
               <td>
                 <label for="lbl_date">
                   fecha:
                 </label>
-                <i id="fecha"> </i>
+                <input name="full_personal_data[]"  type="text" value="05/12/2022">
+                <!-- <i id="fecha"> </i> -->
               </td>
             </tr>
             <tr>
               <td>
                 <label for="">area:</label>
-                <input type="text" value="<?php echo $ejmDatosForm->row["jobTitle"] ?>">
+                <input name="full_personal_data[]" type="text" value="<?php echo $ejmDatosForm->row["jobTitle"] ?>">
               </td>
               <td>
                 <label for="">Unidad:</label>
@@ -198,7 +199,7 @@ $ejmDatosForm->setDatos($loginID);
               </td>
               <td>
                 <label for="">Proyecto:</label>
-                <input type="text" value="<?php echo $ejmDatosForm->row["PrjName"] ?>">
+                <input name="full_personal_data[]" type="text" value="<?php echo $ejmDatosForm->row["PrjName"] ?>">
               </td>
             </tr>
             <tr>
@@ -213,7 +214,7 @@ $ejmDatosForm->setDatos($loginID);
               </td>
               <td>
                 <label for="">Importe:</label>
-                <input type="text" class="txtimporte" id="txtimporte" name="txtimporte">
+                <input type="text" class="txtimporte" id="txtimporte" name="detalle_rendicion[]">
               </td>
             </tr>
             <tr>
@@ -221,7 +222,7 @@ $ejmDatosForm->setDatos($loginID);
                 <label for="">Destino de fondos:</label>
               </td>
               <td>
-                <input type="text">
+                <input name="detalle_rendicion[]" type="text">
               </td>
             </tr>
 
@@ -248,16 +249,16 @@ $ejmDatosForm->setDatos($loginID);
           <tr class="detail-row">
             <td>
               <!-- datePicker campo -->
-              <input name="datePicker" class="form-control" type="text" id="field_date_1" />
+              <input name="datePicker[]" class="form-control" type="text" id="field_date_1" />
             </td>
             <td>
-              <input name="factura_number[]" type="text" class="form-control" id="field_bill_1" />
+              <input name="datePicker[]" type="text" class="form-control" id="field_bill_1" />
             </td>
             <td>
-              <input name="detalle_factura[]" type="text" class="form-control" id="field_bill_detalle_1" />
+              <input name="datePicker[]" type="text" class="form-control" id="field_bill_detalle_1" />
             </td>
             <td>
-              <input name="monto_factura[]" type="number" class="form-control monto_row_fai" id="field_monto_1" />
+              <input name="datePicker[]" type="text" class="form-control monto_row_fai" id="field_monto_1" />
             </td>
             <td>
               <input name="btn-agregar" type="button" value="Agregar" />
@@ -336,30 +337,30 @@ $ejmDatosForm->setDatos($loginID);
               <!-- <td></td>
               <td></td> -->
               <td>Total</td>
-              <td><input class="subtotal" type='text' id='subtotal' name='subtotal' readonly /></td>
+              <td><input class="subtotal" type='text' id='subtotal' name='totales[]' readonly /></td>
             </tr>
             <tr>
               <td>Saldo a depositar</td>
-              <td><input class="return-money" type='text' id='return-money' name='return-money' readonly /></td>
+              <td><input class="return-money" type='text' id='return-money' name='totales[]' readonly /></td>
             </tr>
             <tr>
               <td>Reintegro</td>
-              <td><input class="reintegro" type='text' id='reintegro' name='reintegro' readonly /></td>
+              <td><input class="reintegro" type='text' id='reintegro' name='totales[]' readonly /></td>
             </tr>
           </tbody>
         </table>
-        
-        
+
+
 
       </div>
       <input type="submit" value="Enviar">
-      </form>
+    </form>
   </div>
- 
+
   <!-- javascript configuracion of the TimePicker -->
   <script src="js/dtsel.js"></script>
   <script>
-    instance = new dtsel.DTS('input[name="datePicker"]', {
+    instance = new dtsel.DTS('input[name="datePicker[]"]', {
       direction: "BOTTOM",
     });
     // instance = new dtsel.DTS('input[name="dateTimePicker"]', {
