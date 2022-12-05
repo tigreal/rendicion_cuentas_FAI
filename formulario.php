@@ -7,8 +7,10 @@ class datosFormulario
 {
   protected $erro;
   public $connect;
+  public $connect2;
   protected $loginID;
   public $row;
+  public $row2;
   function __construct()
   {
     $info_conexion = array("Database" => DB_NAME2, "UID" => DB_USER, "PWD" => DB_PASSWORD);
@@ -21,7 +23,34 @@ class datosFormulario
       die(print_r(sqlsrv_errors(), true));
     }
     $this->error = array();
-    
+
+    // coneccion db1
+    $info_conexion2 = array("Database" => DB_NAME, "UID" => DB_USER, "PWD" => DB_PASSWORD);
+    // $this->flag = 0;
+    $this->connect2 = sqlsrv_connect(
+      DB_SERVER_NAME,
+      $info_conexion2
+    );
+    if (!$this->connect2) {
+      die(print_r(sqlsrv_errors(), true));
+    }
+    $this->error = array();
+    // coneccion db1 fin
+
+    try {
+
+      $this->setDatos($_SESSION["ci"]);
+      $params2 = array();
+      $query2 = "insert into temp_number_formulario values('" . $this->row['U_proyecto'] . "','" . $_SESSION["ci"] . "')";
+      // insert into temp_number_formulario values('PS-000','6134475')
+      $options2 =  array("Scrollable" => SQLSRV_CURSOR_KEYSET);
+      // only return false if a parameters are bad
+      $declaracion2 = sqlsrv_prepare($this->connect2, $query2, $params2, $options2);
+      $res2 = sqlsrv_execute($declaracion2);
+      var_dump("<br/><br/>se guardo: " . $res2);
+    } catch (Exception $e) {
+      echo "error" . $e->getMessage();
+    }
   }
   public function setDatos($loginID)
   {
@@ -29,7 +58,7 @@ class datosFormulario
     // " .  . "
     $params = array();
     $query = "select firstName,lastName,U_ApMaterno,PrjName,jobTitle,U_proyecto from OHEM join OPRJ on OHEM.U_proyecto = OPRJ.PrjCode
-    where govID='".$loginID."'";
+    where govID='" . $loginID . "'";
     $options =  array("Scrollable" => SQLSRV_CURSOR_KEYSET);
     // only return false if a parameters are bad
     $declaracion = sqlsrv_prepare($this->connect, $query, $params, $options);
@@ -39,17 +68,37 @@ class datosFormulario
     var_dump($declaracion);
 
     if ($res && $declaracion) {
-      echo "chamaco";
+
       $this->row = sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_ASSOC);
       var_dump($this->row);
     }
   }
+  public function getNumeroFormulario()
+  {
+    // $loginID
+    // " .  . "
+    $params3 = array();
+    $query3 = "select top 1 * from temp_number_formulario where ci ='" . $_SESSION["ci"] . "' order by numero_formulario_temp desc";
+    $options3 =  array("Scrollable" => SQLSRV_CURSOR_KEYSET);
+    // only return false if a parameters are bad
+    $declaracion3 = sqlsrv_prepare($this->connect2, $query3, $params3, $options3);
+    $res3 = sqlsrv_execute($declaracion3);
+    // $num_rows = sqlsrv_num_rows($declaracion);
+    // var_dump($res3);
+    // var_dump($declaracion);
+
+    if ($res3 && $declaracion3) {
+      // echo "entro";
+      $this->row3 = sqlsrv_fetch_array($declaracion3, SQLSRV_FETCH_ASSOC);
+      // var_dump($this->row3);
+    }
+  }
 }
-$loginID=$_SESSION["ci"];
+$loginID = $_SESSION["ci"];
 echo $loginID;
-$ejmDatosForm= new datosFormulario();
+$ejmDatosForm = new datosFormulario();
 $ejmDatosForm->setDatos($loginID);
-echo "fadfasd";
+
 
 
 
@@ -105,9 +154,11 @@ echo "fadfasd";
 
 
   <div class="container">
+  <form name="formulario_rendi" action="saveForm.php" method="POST">
     <div>
       <label for="NumeroDocumet">
-        <h3 id=docNumber>Documento Nº:</h3>
+        <h3 id=docNumber>Documento Nº:<?php $ejmDatosForm->getNumeroFormulario();
+                                      echo $ejmDatosForm->row3["numero_formulario_temp"]; ?></h3>
       </label>
     </div>
 
@@ -118,108 +169,109 @@ echo "fadfasd";
     <div class="titulo">
       <h2>Coordinadores</h2>
     </div>
+    
+      <div class="container-informacion">
 
-    <div class="container-informacion">
-      <table border="1" id="table_main">
-        <tbody>
-          <tr>
-            <td>
-              <label for="lbl_nombre">nombre:</label>
-              <input type="text" id="full_name" value="<?php echo $ejmDatosForm->row["firstName"]." ".$ejmDatosForm->row["lastName"]." ".$ejmDatosForm->row["U_ApMaterno"]?>">
-            </td>
+        <table border="1" id="table_main">
+          <tbody>
+            <tr>
+              <td>
+                <label for="lbl_nombre">nombre:</label>
+                <input type="text" id="full_name" value="<?php echo $ejmDatosForm->row["firstName"] . " " . $ejmDatosForm->row["lastName"] . " " . $ejmDatosForm->row["U_ApMaterno"]; ?>">
+              </td>
 
-            <td>
-              <label for="lbl_date">
-                fecha:
-              </label>
-              <i id="fecha"> </i>
-            </td>
-          </tr>
+              <td>
+                <label for="lbl_date">
+                  fecha:
+                </label>
+                <i id="fecha"> </i>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="">area:</label>
+                <input type="text" value="<?php echo $ejmDatosForm->row["jobTitle"] ?>">
+              </td>
+              <td>
+                <label for="">Unidad:</label>
+                <input type="text">
+              </td>
+              <td>
+                <label for="">Proyecto:</label>
+                <input type="text" value="<?php echo $ejmDatosForm->row["PrjName"] ?>">
+              </td>
+            </tr>
+            <tr>
+              <td>importe recivido con </td>
+              <td>
+                <label for="">cheque:</label>
+                <input type="text">
+              </td>
+              <td>
+                <label for="">Efectivo:</label>
+                <input type="text">
+              </td>
+              <td>
+                <label for="">Importe:</label>
+                <input type="text" class="txtimporte" id="txtimporte" name="txtimporte">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="">Destino de fondos:</label>
+              </td>
+              <td>
+                <input type="text">
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+
+      </div>
+
+
+
+      <!-- field to add values how fecha factura detalle monto -->
+      <!-- Here pure-table class is used -->
+      <table class="detail-table" border="1">
+        <thead>
           <tr>
-            <td>
-              <label for="">area:</label>
-              <input type="text" value="<?php echo $ejmDatosForm->row["jobTitle"]?>">
-            </td>
-            <td>
-              <label for="">Unidad:</label>
-              <input type="text">
-            </td>
-            <td>
-              <label for="">Proyecto:</label>
-              <input type="text" value="<?php echo $ejmDatosForm->row["PrjName"]?>">
-            </td>
+            <th>Fecha</th>
+            <th>Factura</th>
+            <th>Detalle</th>
+            <th>Monto</th>
+            <th>Accion</th>
           </tr>
-          <tr>
-            <td>importe recivido con </td>
+        </thead>
+        <tbody class="cuerpo-detalle">
+          <tr class="detail-row">
             <td>
-              <label for="">cheque:</label>
-              <input type="text">
+              <!-- datePicker campo -->
+              <input name="datePicker" class="form-control" type="text" id="field_date_1" />
             </td>
             <td>
-              <label for="">Efectivo:</label>
-              <input type="text">
+              <input name="factura_number[]" type="text" class="form-control" id="field_bill_1" />
             </td>
             <td>
-              <label for="">Importe:</label>
-              <input type="text" class="txtimporte" id="txtimporte" name="txtimporte">
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label for="">Destino de fondos:</label>
+              <input name="detalle_factura[]" type="text" class="form-control" id="field_bill_detalle_1" />
             </td>
             <td>
-              <input type="text">
+              <input name="monto_factura[]" type="number" class="form-control monto_row_fai" id="field_monto_1" />
+            </td>
+            <td>
+              <input name="btn-agregar" type="button" value="Agregar" />
+            </td>
+            <td>
+              <input name="btn-eliminar" type="button" value="Eliminar" disabled />
             </td>
           </tr>
 
         </tbody>
+
+
       </table>
-
-    </div>
-
-
-
-    <!-- field to add values how fecha factura detalle monto -->
-    <!-- Here pure-table class is used -->
-    <table class="detail-table" border="1">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Factura</th>
-          <th>Detalle</th>
-          <th>Monto</th>
-          <th>Accion</th>
-        </tr>
-      </thead>
-      <tbody class="cuerpo-detalle">
-        <tr class="detail-row">
-          <td>
-            <!-- datePicker campo -->
-            <input name="datePicker" class="form-control" type="text" id="field_date_1" />
-          </td>
-          <td>
-            <input name="factura_number[]" type="text" class="form-control" id="field_bill_1" />
-          </td>
-          <td>
-            <input name="detalle_factura[]" type="text" class="form-control" id="field_bill_detalle_1" />
-          </td>
-          <td>
-            <input name="monto_factura[]" type="number" class="form-control monto_row_fai" id="field_monto_1" />
-          </td>
-          <td>
-            <input name="btn-agregar" type="button" value="Agregar" />
-          </td>
-          <td>
-            <input name="btn-eliminar" type="button" value="Eliminar" disabled />
-          </td>
-        </tr>
-
-      </tbody>
-
-
-    </table>
-    <!-- <table class="pure-table">
+      <!-- <table class="pure-table">
       <thead>
         <tr>
           <th>Fecha</th>
@@ -265,10 +317,10 @@ echo "fadfasd";
         </tr>
       </tbody>
     </table> -->
-    <div class="">
+      <div class="">
 
-      <table class="footer-total" border="1">
-        <!-- <thead>
+        <table class="footer-total" border="1">
+          <!-- <thead>
             <tr>
               <th></th>
               <th></th>
@@ -276,30 +328,34 @@ echo "fadfasd";
               <th></th>
             </tr>
           </thead> -->
-        <tbody>
+          <tbody>
 
 
 
-          <tr>
-            <!-- <td></td>
+            <tr>
+              <!-- <td></td>
               <td></td> -->
-            <td>Total</td>
-            <td><input class="subtotal" type='text' id='subtotal' name='subtotal' readonly /></td>
-          </tr>
-          <tr>
-            <td>Saldo a depositar</td>
-            <td><input class="return-money" type='text' id='return-money' name='return-money' readonly /></td>
-          </tr>
-          <tr>
-            <td>Reintegro</td>
-            <td><input class="reintegro" type='text' id='reintegro' name='reintegro' readonly /></td>
-          </tr>
-        </tbody>
-      </table>
+              <td>Total</td>
+              <td><input class="subtotal" type='text' id='subtotal' name='subtotal' readonly /></td>
+            </tr>
+            <tr>
+              <td>Saldo a depositar</td>
+              <td><input class="return-money" type='text' id='return-money' name='return-money' readonly /></td>
+            </tr>
+            <tr>
+              <td>Reintegro</td>
+              <td><input class="reintegro" type='text' id='reintegro' name='reintegro' readonly /></td>
+            </tr>
+          </tbody>
+        </table>
+        
+        
 
-
-    </div>
+      </div>
+      <input type="submit" value="Enviar">
+      </form>
   </div>
+ 
   <!-- javascript configuracion of the TimePicker -->
   <script src="js/dtsel.js"></script>
   <script>
@@ -320,8 +376,8 @@ echo "fadfasd";
   </script>
 
   <script>
-    document.getElementById("docNumber").innerHTML += Math.floor(Math.random() * 10);
-    document.getElementById("fecha").innerHTML += Date();
+    // document.getElementById("docNumber").innerHTML += Math.floor(Math.random() * 10);
+    // document.getElementById("fecha").innerHTML += Date();
   </script>
   <!-- method clone this metodo permite introducir las new rows -->
   <script>
