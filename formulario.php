@@ -64,6 +64,7 @@ class datosFormulario
     $declaracion = sqlsrv_prepare($this->connect, $query, $params, $options);
     $res = sqlsrv_execute($declaracion);
     // $num_rows = sqlsrv_num_rows($declaracion);
+    
     var_dump($res);
     var_dump($declaracion);
 
@@ -159,6 +160,8 @@ $ejmDatosForm->setDatos($loginID);
         <label for="NumeroDocumet">
           <h3 id=docNumber>Documento Nº:<?php $ejmDatosForm->getNumeroFormulario();
                                         echo $ejmDatosForm->row3["numero_formulario_temp"]; ?></h3>
+<input name="full_personal_data[]" type="text" value="<?php $ejmDatosForm->getNumeroFormulario();
+                                        echo $ejmDatosForm->row3["numero_formulario_temp"]; ?>" hidden>
         </label>
       </div>
 
@@ -177,14 +180,16 @@ $ejmDatosForm->setDatos($loginID);
             <tr>
               <td>
                 <label for="lbl_nombre">nombre:</label>
-                <input type="text" name="full_personal_data[]"  value="<?php echo $ejmDatosForm->row["firstName"] . " " . $ejmDatosForm->row["lastName"] . " " . $ejmDatosForm->row["U_ApMaterno"]; ?>">
+                <input type="text" name="full_personal_data[]" value="<?php echo $ejmDatosForm->row["firstName"] . " " . $ejmDatosForm->row["lastName"] . " " . $ejmDatosForm->row["U_ApMaterno"]; ?>">
+                <input type="text" name="ci_ps[]" hidden value="<?php echo $_SESSION["ci"];?>">
+                <input type="text" name="ci_ps[]" hidden value="<?php echo $ejmDatosForm->row["U_proyecto"];?>">
               </td>
 
               <td>
                 <label for="lbl_date">
                   fecha:
                 </label>
-                <input name="full_personal_data[]"  type="text" value="05/12/2022">
+                <input name="full_personal_data[]" type="text" value="2022-12-11">
                 <!-- <i id="fecha"> </i> -->
               </td>
             </tr>
