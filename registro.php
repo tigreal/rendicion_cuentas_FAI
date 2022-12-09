@@ -108,7 +108,15 @@ if (isset($_SESSION['start'])) {
 
           <div class="form-group">
             <label for="passRegister" id="passLabelRegister">Contraseña</label>
-            <input type="password" name="passRegister" id="passRegister" class="form-control" class="form-control" placeholder="Contraseña">
+            <input type="password" name="passRegister" id="passRegister" class="form-control" placeholder="Contraseña">
+          </div>
+          <div class="form-group">
+            <label for="typeUser" id="typeLabelUser">Tipo Usuario</label>
+            <select name="type_user" id="tipo_usurio" class="form-control">
+              <option value="usuario" selected>Usuario</option>
+              <option value="contador">Contadores</option>
+              <option value="administrador">Administrador</option>
+            </select>
           </div>
           <button type="button" class="btn btn-success" onclick="registerCheck()" value="Register" id="registrar">Registrar</button>
           
@@ -200,6 +208,8 @@ if (isset($_SESSION['start'])) {
       registro_user.push($('#gsearchsimple').val());
       registro_user.push($('#ci').val());
       registro_user.push($('#passRegister').val());
+      registro_user.push($('#tipo_usurio').val());
+      
       // console.log(registro_user);
       $.ajax({
         url: "fetch.php",
