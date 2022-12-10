@@ -20,14 +20,14 @@ function showError(key, value)
 
 function validateEmail(val)
 {
-    var re = /^[0-9]$/;
+    var re = /^[\w\d][^_]*$/;
     return re.test(val);
 }
 
 function login()
 {
     // var re = /^\S+@/;
-    var re = /^[0-9]$/;
+    var re = /^[\w\d][^_^\p{P}^\s^`^~@#$%^&*()_+]*$/;
     var val = $("#login").val();
     $("input#login").prev("span").remove();
      console.log("loginVal:"+val);
@@ -38,22 +38,25 @@ function login()
     }
     else if(re.test(val))
     {
-        var ret = validateEmail(val);
-        if(!ret)
-        {
-            valLogin = 1;
-            showError("login", " *CI invalido");
-        }
-        else
-        {
-            $("#login").css(removeError);
-            valLogin = 0;
-        }
+        // var ret = validateEmail(val);
+        // if(!ret)
+        // {
+        //     valLogin = 1;
+        //     showError("login", " *CI invalido");
+        // }
+        // else
+        // {
+        //     $("#login").css(removeError);
+        //     valLogin = 0;
+        // }
+        $("#login").css(removeError);
+             valLogin = 0;
     }
     else
     {
-        $("#login").css(removeError);
-        valLogin = 0;
+        showError("login", " *El Carnet de identidad es incorrecto");
+        // $("#login").css(removeError);
+        // valLogin = 0;
     }
 }
 
@@ -98,6 +101,7 @@ function loginCheck()
     // console.log(login);
     if(valLogin === 0 && valPass === 0)
     {
+        console.log("paso");
         var q = {
             "login": login,
             "password": password

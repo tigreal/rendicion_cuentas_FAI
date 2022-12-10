@@ -1,8 +1,9 @@
 <?php
-session_start();
+
 // namespace AnkitJain\RegistrationModule;
 // use AnkitJain\RegistrationModule\Session;
 require_once dirname(__DIR__) . '/config/database.php';
+// require_once dirname(__DIR__) . '/source/Session.php';
 
 class Login
 {
@@ -101,9 +102,9 @@ class Login
                         // var_dump($row);
                         if ($num_rows > 0) {
                             // Session::put('start', $loginID);
-                            $_SESSION['ci']=$loginID;
                             return json_encode(
                                 [
+                                    //siempre colocar la barra /because the define URl do not have the backslash
                                     "location" => URL . "/formulario.php"
                                 ]
                             );

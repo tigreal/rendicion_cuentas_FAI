@@ -114,7 +114,7 @@ if (isset($_SESSION['start'])) {
             <label for="typeUser" id="typeLabelUser">Tipo Usuario</label>
             <select name="type_user" id="tipo_usurio" class="form-control">
               <option value="usuario" selected>Usuario</option>
-              <option value="contador">Contadores</option>
+              <option value="contadores">Contadores</option>
               <option value="administrador">Administrador</option>
             </select>
           </div>
@@ -209,6 +209,7 @@ if (isset($_SESSION['start'])) {
       registro_user.push($('#ci').val());
       registro_user.push($('#passRegister').val());
       registro_user.push($('#tipo_usurio').val());
+      
       
       // console.log(registro_user);
       $.ajax({

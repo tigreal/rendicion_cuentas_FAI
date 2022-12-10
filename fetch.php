@@ -7,7 +7,7 @@ define('DB_USER', 'sa');
 define('DB_PASSWORD', 'admin12345');
 define('DB_NAME', 'prueba');
 define('DB_NAME2', 'formulario');
-define('DB_SERVER_NAME', 'DESKTOP-S4UV3CT');
+define('DB_SERVER_NAME', 'DESKTOP-GPP6M5J\MSSQLSERVER2019');
 
 
 $connect = new PDO("sqlsrv:server=" . DB_SERVER_NAME . "; Database=" . DB_NAME . "", DB_USER, DB_PASSWORD);
@@ -52,7 +52,8 @@ if (isset($_POST['registro_user'])) {
     if (count($result) > 0) {
         $query = "
         UPDATE login
-        SET clave ='". trim($_POST["registro_user"][2]) ."'
+        SET clave ='". trim($_POST["registro_user"][2]) ."',
+        user_type='".trim($_POST["registro_user"][3])."' 
         WHERE carnet =".trim($_POST["registro_user"][1])."";
 
         
@@ -65,8 +66,8 @@ if (isset($_POST['registro_user'])) {
 
     } else {
         $query = "
- insert into login(name,carnet,clave)
- values('" . $_POST["registro_user"][0] . "'," . trim($_POST["registro_user"][1]) . ",'" . trim($_POST["registro_user"][2]) ."')";
+ insert into login(name,carnet,clave,user_type)
+ values('" . $_POST["registro_user"][0] . "'," . trim($_POST["registro_user"][1]) . ",'" . trim($_POST["registro_user"][2]) ."','".trim($_POST["registro_user"][3])."')";
 
         //  insert into login(name,carnet,clave) values('osmar', 43443443,'12345')
 
