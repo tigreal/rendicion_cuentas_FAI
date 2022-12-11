@@ -67,7 +67,7 @@ class Login
             // SQLSRV_CURSOR_KEYSET https://learn.microsoft.com/en-us/sql/connect/php/cursor-types-sqlsrv-driver?view=sql-server-ver16
             $options =  array("Scrollable" => SQLSRV_CURSOR_KEYSET);
             // only return false if a parameters are bad
-            $declaracion = sqlsrv_prepare($this->connect, $query,$params,$options);
+            $declaracion = sqlsrv_prepare($this->connect, $query, $params, $options);
             // only return false if the query is bad formating or eny problem whit the query
             $res = sqlsrv_execute($declaracion);
 
@@ -83,36 +83,54 @@ class Login
                     // sqlsrv_close($this->connect);
 
                     $loginID = $row['carnet'];
-                    $query= "
-                    	SELECT name FROM login WHERE
+                    $query = "
+                    	SELECT name,user_type FROM login WHERE
                     	carnet = '$loginID' and
                     	clave = '$password'
                     ";
-                    $declaracion = sqlsrv_prepare($this->connect, $query,$params,$options);
+                    $declaracion = sqlsrv_prepare($this->connect, $query, $params, $options);
                     $res = sqlsrv_execute($declaracion);
                     $num_rows = sqlsrv_num_rows($declaracion);
                     // echo("nemro de rows:");
                     // var_dump($num_rows);
                     // var_dump($declaracion);
-                    if ($num_rows>0) {
-                        
+                    if ($num_rows > 0) {
+
                         sqlsrv_execute($declaracion);
                         $row = sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_ASSOC);
-                      
+
                         // echo "row:";
-                        // var_dump($row);
+                        //  var_dump($row);
                         if ($num_rows > 0) {
                             // Session::put('start', $loginID);
-                            $_SESSION["ci"]=$login;
-                            return json_encode(
-                                [
-                                    //siempre colocar la barra /because the define URl do not have the backslash
-                                    "location" => URL . "/formulario.php"
-                                ]
-                            );
+                            $_SESSION["ci"] = $login;
+                            // echo $row["user_type"];
+                            if ($row["user_type"] == "usuario") {
+                                return json_encode(
+                                    [
+                                        //siempre colocar la barra /because the define URl do not have the backslash
+                                        "location" => URL . "/formulario.php"
+                                    ]
+                                );
+                            }elseif($row["user_type"] == "contador"){
+                                return json_encode(
+                                    [
+                                        //siempre colocar la barra /because the define URl do not have the backslash
+                                        "location" => URL . "/formulario.php"
+                                    ]
+                                );
+                            }elseif($row["user_type"] == "administrador"){
+                                $_SESSION["user_kind"]=$row["user_type"];
+                                return json_encode(
+                                    [
+                                        //siempre colocar la barra /because the define URl do not have the backslash
+                                        "location" => URL . "/registro.php"
+                                    ]
+                                );
+                            }
                         }
                         $this->onError("passLogin", " *Revise su carnet o su clave de ingreso");
-                        return json_encode(["passLogin"=>" *Revise su carnet o su clave de ingreso"]);
+                        return json_encode(["passLogin" => " *Revise su carnet o su clave de ingreso"]);
                         // return json_encode($this->error);
                     }
                     // return json_encode(
@@ -125,18 +143,18 @@ class Login
                     $this->onError("login", " *Usuario Invalido");
                     return json_encode($this->error);
                 } else {
-                    
+
                     return json_encode(
                         [
-                             "Error" => "*No estas registrado"
+                            "Error" => "*No estas registrado"
                             //  "Error" => "No estas registrado,"
-                                                     
+
                         ]
                     );
                     // die(print_r(sqlsrv_errors(), true));
                 }
-            }else{
-                return json_encode(["login"=>" *Revise su carnet o su clave de ingreso"]);
+            } else {
+                return json_encode(["login" => " *Revise su carnet o su clave de ingreso"]);
             }
             // return json_encode(
             //     [
@@ -145,7 +163,7 @@ class Login
             //     ]
             // );
         } else {
-            return json_encode(["passLogin"=>" *Revise su carnet o su clave de ingreso"]);
+            return json_encode(["passLogin" => " *Revise su carnet o su clave de ingreso"]);
         }
     }
 

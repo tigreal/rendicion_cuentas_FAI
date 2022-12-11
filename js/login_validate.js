@@ -121,7 +121,7 @@ function loginCheck()
                  
                 if(result["location"])
                 {
-                    // location.href = result["location"];
+                     location.href = result["location"];
                 }
                 $(result).each(function(index, element) {
                     // console.log(result["login"]);

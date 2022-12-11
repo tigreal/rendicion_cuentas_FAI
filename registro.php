@@ -1,8 +1,13 @@
 <?php
 session_start();
-if (isset($_SESSION['start'])) {
-  header("Location: account.php");
+require_once dirname(__DIR__) . '/ArcoIrisRediCuentas/config/database.php';
+if (isset($_SESSION["ci"])&&isset($_SESSION["user_kind"])&&$_SESSION["ci"]&&$_SESSION["user_kind"]&&$_SESSION["user_kind"]=="administrador") {
+  
+}else{
+  header("Location:".URL."/index.php");
+  exit;
 }
+
 ?>
 <!Doctype html>
 <html>
