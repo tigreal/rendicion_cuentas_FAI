@@ -15,8 +15,10 @@ if(isset($_POST['q']))
         'passLogin' => $password
     );
 	$result = $obLogin->authLogin($data);
-	if(isset($result))
+	
+	if(isset($result)){
 		echo $result;
-	else
+	}else{
 		echo json_encode([]);
+	}
 }

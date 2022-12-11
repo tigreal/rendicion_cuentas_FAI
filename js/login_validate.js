@@ -112,19 +112,25 @@ function loginCheck()
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function()
         {
+            // console.log("readystate:"+xmlhttp.readyState);
+            // console.log(" status:"+xmlhttp.status);
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
             {
-                // console.log(xmlhttp.responseText);
+                
                 var result = JSON.parse(xmlhttp.responseText);
-                // console.log("result:"+result);
+                 
                 if(result["location"])
                 {
-                    location.href = result["location"];
+                    // location.href = result["location"];
                 }
                 $(result).each(function(index, element) {
-                    showError(element["key"], element["value"]);
+                    // console.log(result["login"]);
+                    // console.log(index);
+                    // showError(element["key"], element["value"]);
+                    showError("passLogin"," *Revise su carnet o su clave de ingreso");
                 });
             }
+
         };
         xmlhttp.open("POST", "ajax/validate_login.php", true);
         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");

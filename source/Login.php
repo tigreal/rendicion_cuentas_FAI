@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 // namespace AnkitJain\RegistrationModule;
 // use AnkitJain\RegistrationModule\Session;
 require_once dirname(__DIR__) . '/config/database.php';
@@ -54,8 +54,8 @@ class Login
         $login = $data["login"];
         $password = $data["passLogin"];
 
-        if (preg_match("/^[0-9]+$/", $login)) {
-            if (filter_var($login, FILTER_VALIDATE_INT) == false) {
+        if (preg_match("/^[\w\d][^_^\p{P}^\s^`^~@#$%^&*()_+]*$/", $login)) {
+            if (filter_var($login, FILTER_SANITIZE_STRING) == false) {
                 $this->onError("login", " *Introdusca su carnet correctamente");
             }
         }
@@ -95,6 +95,7 @@ class Login
                     // var_dump($num_rows);
                     // var_dump($declaracion);
                     if ($num_rows>0) {
+                        
                         sqlsrv_execute($declaracion);
                         $row = sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_ASSOC);
                       
@@ -102,6 +103,7 @@ class Login
                         // var_dump($row);
                         if ($num_rows > 0) {
                             // Session::put('start', $loginID);
+                            $_SESSION["ci"]=$login;
                             return json_encode(
                                 [
                                     //siempre colocar la barra /because the define URl do not have the backslash
@@ -109,36 +111,41 @@ class Login
                                 ]
                             );
                         }
-                        $this->onError("passLogin", " *Invalid password");
-                        return json_encode($this->error);
+                        $this->onError("passLogin", " *Revise su carnet o su clave de ingreso");
+                        return json_encode(["passLogin"=>" *Revise su carnet o su clave de ingreso"]);
+                        // return json_encode($this->error);
                     }
-                    return json_encode(
-                        [
-                            "Error" => "No estas registrado, "
-                            // "Error" => "No estas registrado, " . $this->connect->error
-                        ]
-                    );
+                    // return json_encode(
+                    //     [
+                    //         "Error" => "No estas registrado, "
+                    //         // "Error" => "No estas registrado, " . $this->connect->error
+                    //     ]
+                    // );
 
                     $this->onError("login", " *Usuario Invalido");
                     return json_encode($this->error);
                 } else {
+                    
                     return json_encode(
                         [
-                            "Error" => "No estas registrado, "
-                            // "Error" => "No estas registrado, " . $this->connect->error
+                             "Error" => "*No estas registrado"
+                            //  "Error" => "No estas registrado,"
+                                                     
                         ]
                     );
                     // die(print_r(sqlsrv_errors(), true));
                 }
+            }else{
+                return json_encode(["login"=>" *Revise su carnet o su clave de ingreso"]);
             }
-            return json_encode(
-                [
-                    "Error" => "No estas registrado, " 
-                    // "Error" => "No estas registrado, " . $this->connect->error
-                ]
-            );
+            // return json_encode(
+            //     [
+            //         "Error" => "No estas registrado, " 
+            //         // "Error" => "No estas registrado, " . $this->connect->error
+            //     ]
+            // );
         } else {
-            return json_encode($this->error);
+            return json_encode(["passLogin"=>" *Revise su carnet o su clave de ingreso"]);
         }
     }
 
