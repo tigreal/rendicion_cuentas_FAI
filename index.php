@@ -47,10 +47,10 @@ if (isset($_SESSION['start'])) {
         <ul class="nav navbar-nav">
           <li class="active"><a href="#">Inicio</a></li>
         </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <!-- <li><a href="#Register"><span class="glyphicon glyphicon-user"></span> Registrarse</a></li> -->
+        <!-- <ul class="nav navbar-nav navbar-right">
+          <li><a href="#Register"><span class="glyphicon glyphicon-user"></span> Registrarse</a></li>
           <li><a href="#Login"><span class="glyphicon glyphicon-log-in"></span> Entrar</a></li>
-        </ul>
+        </ul> -->
       </div>
     </div>
   </nav>

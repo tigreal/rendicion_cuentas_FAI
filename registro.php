@@ -51,10 +51,11 @@ if (isset($_SESSION["ci"])&&isset($_SESSION["user_kind"])&&$_SESSION["ci"]&&$_SE
       <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
           <li class="active"><a href="#">Inicio</a></li>
+          <li class="active"><a href="<?php echo URL."/formulario.php";?>">Formulario</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <!-- <li><a href="#Register"><span class="glyphicon glyphicon-user"></span> Registrarse</a></li> -->
-          <li><a href="#Login"><span class="glyphicon glyphicon-log-in"></span> Entrar</a></li>
+          <li><a href="<?php echo URL."/close_session.php";?>"><span class="glyphicon glyphicon-log-in"></span> Salir</a></li>
         </ul>
       </div>
     </div>
@@ -229,6 +230,8 @@ if (isset($_SESSION["ci"])&&isset($_SESSION["user_kind"])&&$_SESSION["ci"]&&$_SE
         }
       })
     });
+
+    // add new function
 
   });
 </script>

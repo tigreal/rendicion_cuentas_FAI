@@ -106,6 +106,7 @@ class Login
                             $_SESSION["ci"] = $login;
                             // echo $row["user_type"];
                             if ($row["user_type"] == "usuario") {
+                                $_SESSION["user_kind"]=$row["user_type"];
                                 return json_encode(
                                     [
                                         //siempre colocar la barra /because the define URl do not have the backslash
@@ -113,6 +114,7 @@ class Login
                                     ]
                                 );
                             }elseif($row["user_type"] == "contador"){
+                                $_SESSION["user_kind"]=$row["user_type"];
                                 return json_encode(
                                     [
                                         //siempre colocar la barra /because the define URl do not have the backslash

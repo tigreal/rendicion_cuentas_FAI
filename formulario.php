@@ -1,7 +1,22 @@
 <?php
 session_start();
+setlocale(LC_ALL, 'es_ES');
 // echo dirname(__DIR__);
 require_once dirname(__DIR__) . '/ArcoIrisRediCuentas/config/database.php';
+
+
+if (isset($_SESSION["ci"]) && isset($_SESSION["user_kind"]) && $_SESSION["ci"] && $_SESSION["user_kind"]) {
+  if (!empty($_SESSION["ci"]) && !empty($_SESSION["user_kind"])) {
+    if ($_SESSION["user_kind"] == "administrador" || $_SESSION["user_kind"] == "usuario" || $_SESSION["user_kind"] == "contador") {
+    }
+  } else {
+    header("Location:" . URL . "/index.php");
+    exit;
+  }
+} else {
+  header("Location:" . URL . "/index.php");
+  exit;
+}
 
 class datosFormulario
 {
@@ -11,6 +26,7 @@ class datosFormulario
   protected $loginID;
   public $row;
   public $row2;
+  public $row4;
   function __construct()
   {
     $info_conexion = array("Database" => DB_NAME2, "UID" => DB_USER, "PWD" => DB_PASSWORD);
@@ -47,7 +63,7 @@ class datosFormulario
       // only return false if a parameters are bad
       $declaracion2 = sqlsrv_prepare($this->connect2, $query2, $params2, $options2);
       $res2 = sqlsrv_execute($declaracion2);
-      var_dump("<br/><br/>se guardo: " . $res2);
+      // var_dump("<br/><br/>se guardo: " . $res2);
     } catch (Exception $e) {
       echo "error" . $e->getMessage();
     }
@@ -64,15 +80,41 @@ class datosFormulario
     $declaracion = sqlsrv_prepare($this->connect, $query, $params, $options);
     $res = sqlsrv_execute($declaracion);
     // $num_rows = sqlsrv_num_rows($declaracion);
-    
-    var_dump($res);
-    var_dump($declaracion);
+
+    // var_dump($res);
+    // var_dump($declaracion);
 
     if ($res && $declaracion) {
 
       $this->row = sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_ASSOC);
-      var_dump($this->row);
+      // var_dump($this->row);
     }
+  }
+  public function getFechaServer()
+  {
+    setlocale(LC_ALL, 'es_ES');
+    $params4 = array();
+    $query4 = "SELECT CONVERT(date, GETDATE()) as fecha_ser";
+    // $options4 =  array("Scrollable" => SQLSRV_FETCH_ASSOC);
+
+    // only return false if a parameters are bad
+    // $declaracion4 = sqlsrv_prepare($this->connect2, $query4, $params4, $options4);
+    $stmt = sqlsrv_query($this->connect2, $query4);
+    if ($stmt === false) {
+    } else {
+      $this->row4 = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    }
+    // $res4 = sqlsrv_execute($declaracion4);
+    // $num_rows = sqlsrv_num_rows($declaracion);
+
+    // var_dump($res);
+    // var_dump($declaracion);
+
+    // if ($res4 && $declaracion4) {
+
+    //   $this->row4 = sqlsrv_fetch_array($declaracion4, SQLSRV_FETCH_ASSOC);
+    //   // var_dump($this->row4);
+    // }
   }
   public function getNumeroFormulario()
   {
@@ -96,13 +138,14 @@ class datosFormulario
   }
 }
 $loginID = $_SESSION["ci"];
-echo $loginID;
+// echo $loginID;
 $ejmDatosForm = new datosFormulario();
 $ejmDatosForm->setDatos($loginID);
+$ejmDatosForm->getFechaServer();
 
-
-
-
+// echo $ejmDatosForm->row4["fecha_ser"]->format("Y-M-D");
+$fecha2022 = $ejmDatosForm->row4["fecha_ser"];
+$fecha2022 = strftime("%Y-%m-%d", $fecha2022->getTimestamp());
 
 
 ?>
@@ -119,6 +162,10 @@ $ejmDatosForm->setDatos($loginID);
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- <script src="static/js/jquery.min.js"></script> -->
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- Latest compiled JavaScript -->
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
   <!-- css reposive  configuration -->
   <style>
     .container {
@@ -146,22 +193,59 @@ $ejmDatosForm->setDatos($loginID);
       color: green;
     }
   </style>
+  <style type="text/css">
+    .navbar {
+      border-radius: 0;
+    }
+
+    .heading {
+      padding: 10px;
+    }
+
+    /* input {
+      border-radius: 0px;
+    } */
+  </style>
 
 </head>
 
 <body>
 
-
-
+  <!-- Navbar -->
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Fundacion ArcoIris</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="<?php if($_SESSION["user_kind"]=="administrador"){echo URL."/registro.php";}elseif($_SESSION["user_kind"]=="usuario"){echo "#inicio";}?>">Inicio</a></li>
+        </ul>
+        <!-- <ul class="nav navbar-nav navbar-right">
+          <li><a href="#Register"><span class="glyphicon glyphicon-user"></span> Registrarse</a></li>
+          <li><a href="#Login"><span class="glyphicon glyphicon-log-in"></span> Entrar</a></li>
+        </ul> -->
+        <ul class="nav navbar-nav navbar-right">
+          <!-- <li><a href="#Register"><span class="glyphicon glyphicon-user"></span> Registrarse</a></li> -->
+          <li><a href="<?php echo URL . "/close_session.php"; ?>"><span class="glyphicon glyphicon-log-in"></span> Salir</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
   <div class="container">
-    <form name="formulario_rendi" action="saveForm.php" method="POST">
+    <form name="formulario_rendi" id="formulario_rendi" action="saveForm.php" method="POST">
       <div>
         <label for="NumeroDocumet">
           <h3 id=docNumber>Documento Nº:<?php $ejmDatosForm->getNumeroFormulario();
                                         echo $ejmDatosForm->row3["numero_formulario_temp"]; ?></h3>
-<input name="full_personal_data[]" type="text" value="<?php $ejmDatosForm->getNumeroFormulario();
-                                        echo $ejmDatosForm->row3["numero_formulario_temp"]; ?>" hidden>
+          <input name="full_personal_data[]" type="text" value="<?php $ejmDatosForm->getNumeroFormulario();
+                                                                echo $ejmDatosForm->row3["numero_formulario_temp"]; ?>" hidden>
         </label>
       </div>
 
@@ -180,42 +264,42 @@ $ejmDatosForm->setDatos($loginID);
             <tr>
               <td>
                 <label for="lbl_nombre">nombre:</label>
-                <input type="text" name="full_personal_data[]" value="<?php echo $ejmDatosForm->row["firstName"] . " " . $ejmDatosForm->row["lastName"] . " " . $ejmDatosForm->row["U_ApMaterno"]; ?>">
-                <input type="text" name="ci_ps[]" hidden value="<?php echo $_SESSION["ci"];?>">
-                <input type="text" name="ci_ps[]" hidden value="<?php echo $ejmDatosForm->row["U_proyecto"];?>">
+                <input readonly type="text" name="full_personal_data[]" value="<?php echo $ejmDatosForm->row["firstName"] . " " . $ejmDatosForm->row["lastName"] . " " . $ejmDatosForm->row["U_ApMaterno"]; ?>">
+                <input type="text" name="ci_ps[]" hidden value="<?php echo $_SESSION["ci"]; ?>">
+                <input type="text" name="ci_ps[]" hidden value="<?php echo $ejmDatosForm->row["U_proyecto"]; ?>">
               </td>
 
               <td>
                 <label for="lbl_date">
                   fecha:
                 </label>
-                <input name="full_personal_data[]" type="text" value="2022-12-11">
+                <input readonly  name="full_personal_data[]" type="text" value="<?php echo $fecha2022; ?>">
                 <!-- <i id="fecha"> </i> -->
               </td>
             </tr>
             <tr>
               <td>
                 <label for="">area:</label>
-                <input name="full_personal_data[]" type="text" value="<?php echo $ejmDatosForm->row["jobTitle"] ?>">
+                <input readonly name="full_personal_data[]" type="text" value="<?php echo $ejmDatosForm->row["jobTitle"] ?>">
               </td>
               <td>
-                <label for="">Unidad:</label>
-                <input type="text">
+                <!-- <label for="">Unidad:</label>
+                <input type="text"> -->
               </td>
               <td>
                 <label for="">Proyecto:</label>
-                <input name="full_personal_data[]" type="text" value="<?php echo $ejmDatosForm->row["PrjName"] ?>">
+                <input readonly name="full_personal_data[]" type="text" value="<?php echo $ejmDatosForm->row["PrjName"] ?>">
               </td>
             </tr>
             <tr>
-              <td>importe recivido con </td>
+              <td></td>
               <td>
-                <label for="">cheque:</label>
-                <input type="text">
+                <label for=""></label>
+                <!-- <input type="text"> -->
               </td>
               <td>
-                <label for="">Efectivo:</label>
-                <input type="text">
+                <label for=""></label>
+                <!-- <input type="text"> -->
               </td>
               <td>
                 <label for="">Importe:</label>
@@ -342,7 +426,7 @@ $ejmDatosForm->setDatos($loginID);
               <!-- <td></td>
               <td></td> -->
               <td>Total</td>
-              <td><input class="subtotal" type='text' id='subtotal' name='totales[]' readonly /></td>
+              <td><input class="subtotal" type='text' id='subtotal' name='totales[]' readonly  /></td>
             </tr>
             <tr>
               <td>Saldo a depositar</td>
@@ -350,7 +434,7 @@ $ejmDatosForm->setDatos($loginID);
             </tr>
             <tr>
               <td>Reintegro</td>
-              <td><input class="reintegro" type='text' id='reintegro' name='totales[]' readonly /></td>
+              <td><input class="reintegro" type='text' id='reintegro' name='totales[]' readonly  /></td>
             </tr>
           </tbody>
         </table>
@@ -411,6 +495,27 @@ $ejmDatosForm->setDatos($loginID);
         $(e.target).closest(".cuerpo-detalle").find(".detail-row").last().find("input[name='monto_factura[]']").attr("id", "field_monto_" + numerillo);
 
 
+
+      });
+
+      $("#formulario_rendi").submit(function(e) {
+
+        var valor = false;
+        var $formulario = $("#formulario_rendi");
+        var $inputs = $formulario.find("input");
+        $inputs.each(function(){
+          var inputValor=$(this).val();
+          if (!inputValor) {
+          e.preventDefault();
+          alert("Llene Todos los campos");
+          return false;
+          // break;
+
+        }
+
+
+        });
+        
 
       });
 
