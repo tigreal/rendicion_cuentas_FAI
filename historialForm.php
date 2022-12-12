@@ -1,9 +1,66 @@
 <?php
 session_start();
 require_once dirname(__DIR__) . '/ArcoIrisRediCuentas/config/database.php';
-if (isset($_SESSION['start'])) {
-  header("Location: account.php");
+
+
+class datosFormulario
+{
+  public $connect;
+  public $row;
+
+  function __construct()
+  {
+    $info_conexion = array("Database" => DB_NAME, "UID" => DB_USER, "PWD" => DB_PASSWORD);
+    
+    $this->connect = sqlsrv_connect(
+      DB_SERVER_NAME,
+      $info_conexion
+    );
+    if (!$this->connect) {
+      die(print_r(sqlsrv_errors(), true));
+
+    }
+    $this->error = array();
+
+
+
+    try {
+
+      
+      $params = array();
+      $query = "select nombre,number_form_temp,ci from temp_form_datos";
+      // insert into temp_number_formulario values('PS-000','6134475')
+      $options =  array("Scrollable" => SQLSRV_CURSOR_KEYSET);
+      // only return false if a parameters are bad
+      $declaracion = sqlsrv_prepare($this->connect, $query, $params, $options);
+      $res = sqlsrv_execute($declaracion);
+      $this->row=sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_BOTH,SQLSRV_SCROLL_ABSOLUTE);
+
+      // foreach($row as $valor){
+      //   echo $valor;
+      //    echo $row['nombre'];
+      // }
+      // strftime("%Y-%m-%d", $fecha2022->getTimestamp());
+
+
+
+      // var_dump("<br/><br/>se guardo: " . $res2);
+    } catch (Exception $e) {
+      echo "error" . $e->getMessage();
+    }
+  }
 }
+$objFormulario= new DatosFormulario();
+$objFormulario->row["number_form_temp"];
+// var_dump($objFormulario->row);
+
+
+
+
+
+
+
+
 ?>
 <!Doctype html>
 <html>
@@ -62,6 +119,20 @@ if (isset($_SESSION['start'])) {
   <!-- Main Body -->
   <div class="container"><br><br>
 
+<?php
+echo "
+<table border='1'>
+<tbody>
+<tr>
+<td>
+Formulario N.-".var_dump($objFormulario->row)."
+</td>
+</tr>
+</tbody>
+</table>";
+// $objFormulario->row;
+
+?>
 
 
 
