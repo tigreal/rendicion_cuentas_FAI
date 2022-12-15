@@ -7,18 +7,18 @@ class datosFormulario
 {
   public $connect;
   public $row;
+  public $declaracion;
 
   function __construct()
   {
     $info_conexion = array("Database" => DB_NAME, "UID" => DB_USER, "PWD" => DB_PASSWORD);
-    
+
     $this->connect = sqlsrv_connect(
       DB_SERVER_NAME,
       $info_conexion
     );
     if (!$this->connect) {
       die(print_r(sqlsrv_errors(), true));
-
     }
     $this->error = array();
 
@@ -26,16 +26,51 @@ class datosFormulario
 
     try {
 
-      
+
       $params = array();
-      $query = "select nombre,number_form_temp,ci from temp_form_datos";
+      $query = "select number_form_temp,nombre,proyecto,numero_factura,detalle_descripcion_factura,monto_factura,total,importe,saldo,reintegro from temp_form_datos";
       // insert into temp_number_formulario values('PS-000','6134475')
       $options =  array("Scrollable" => SQLSRV_CURSOR_KEYSET);
       // only return false if a parameters are bad
       $declaracion = sqlsrv_prepare($this->connect, $query, $params, $options);
       $res = sqlsrv_execute($declaracion);
-      $this->row=sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_BOTH,SQLSRV_SCROLL_ABSOLUTE);
+      $import = 0;
+      $saldo = 0;
+      $total = 0;
+      $numeroForm = 0;
+      // $this->row2 = sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_ASSOC);
+      // $numeroForm = $this->row["number_form_temp"];
 
+      while ($this->row = sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_ASSOC)) {
+
+
+        echo $this->row["number_form_temp"] . " " . $this->row["nombre"] . " " . $this->row["proyecto"] . " " . $this->row["numero_factura"] . " " . $this->row["detalle_descripcion_factura"] . " " . $this->row["monto_factura"];
+
+        if ($numeroForm != $this->row["number_form_temp"]) {
+          echo "--IMPORTE " . $this->row["importe"] . "--";
+          echo "--TOTAL " . $this->row["total"] . "--";
+          echo "--SALDO " . $this->row["saldo"] . "--";
+          echo "--REINTEGRO " . $this->row["reintegro"] . "--";
+        } else {
+
+          // if($bandera==1){
+          //   echo "--".$this->row["total"]."--";
+          //   $bandera=0;
+          // }
+          $numeroForm = $this->row["number_form_temp"];
+          $total = $this->row["total"];
+          $import = $this->row["importe"];
+          $saldo = $this->row["saldo"];
+          $saldo = $this->row["reintegro"];
+        }
+        $numeroForm = $this->row["number_form_temp"];
+
+        echo "<br/>";
+        //  echo ;
+        //  echo $this->row["numero_factura"];
+        //  echo $this->row["detalle_descripcion_factura"];
+        //  echo $this->row["monto_factura"];
+      }
       // foreach($row as $valor){
       //   echo $valor;
       //    echo $row['nombre'];
@@ -50,8 +85,8 @@ class datosFormulario
     }
   }
 }
-$objFormulario= new DatosFormulario();
-$objFormulario->row["number_form_temp"];
+$objFormulario = new DatosFormulario();
+// $objFormulario->row["number_form_temp"];
 // var_dump($objFormulario->row);
 
 
@@ -82,6 +117,15 @@ $objFormulario->row["number_form_temp"];
     .heading {
       padding: 10px;
     }
+
+
+    td:not(:empty) {
+      border: 1px solid black;
+    }
+    th:not(:empty) {
+      border: 1px solid black;
+    }
+
 
     /* input {
       border-radius: 0px;
@@ -119,20 +163,129 @@ $objFormulario->row["number_form_temp"];
   <!-- Main Body -->
   <div class="container"><br><br>
 
-<?php
-echo "
-<table border='1'>
-<tbody>
-<tr>
-<td>
-Formulario N.-".var_dump($objFormulario->row)."
-</td>
-</tr>
-</tbody>
-</table>";
-// $objFormulario->row;
+    <?php
 
-?>
+    //     echo "
+    // <table border='1'>
+    // <tbody>
+    // <tr>
+    // <td>
+    // Formulario N.-
+    // </td>
+    // </tr>
+    // </tbody>
+    // </table>";
+    $params = array();
+    $query = "select number_form_temp,nombre,proyecto,numero_factura,detalle_descripcion_factura,monto_factura,total,importe,saldo,reintegro from temp_form_datos";
+    // insert into temp_number_formulario values('PS-000','6134475')
+    $options =  array("Scrollable" => SQLSRV_CURSOR_KEYSET);
+    // only return false if a parameters are bad
+    $declaracion = sqlsrv_prepare($objFormulario->connect, $query, $params, $options);
+    $res = sqlsrv_execute($declaracion);
+    $numeroForm = 0;
+    while ($row = sqlsrv_fetch_array($declaracion, SQLSRV_FETCH_ASSOC)) {
+
+
+      echo "
+    <table  align='center'>
+    ";
+      if($row["number_form_temp"]!=$numeroForm){
+   echo "<thead>
+  <tr>
+    <th>
+      N.-
+    </th>
+    <th>
+      Nombre
+    </th>
+    <th>
+      Proyecto
+    </th>
+    <th>
+      N.- Factura
+    </th>
+    <th>
+      Detalle Factura
+    </th>
+    <th>
+      Monto Factura
+    </th>
+
+
+  </tr>
+  </thead>";
+  }
+
+  echo "<tbody>
+  <tr>
+  <td>
+    {$row["number_form_temp"]}
+  </td>
+  <td>
+    {$row["nombre"]}
+  </td>
+  <td>
+    {$row["proyecto"]}
+  </td>
+  <td>
+    {$row["numero_factura"]}
+  </td>
+  <td>
+    {$row["detalle_descripcion_factura"]}
+  </td>
+  <td>
+    {$row["monto_factura"]}
+  </td>
+  
+  </tr>
+  ";
+
+      // . $row["number_form_temp"] . " " . $row["nombre"] . " " . $row["proyecto"] . " " . $row["numero_factura"] . " " . $row["detalle_descripcion_factura"] . " " . $row["monto_factura"]
+
+      if ($numeroForm != $row["number_form_temp"]) {
+        
+        echo "<tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>TOTAL</td>
+        <td>{$row["total"]}</td>
+        </tr>
+        <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>SALDO</td>
+        <td>{$row["saldo"]}</td>
+        </tr>
+        </tbody>
+        </table>";
+        // echo "--IMPORTE " . $row["importe"] . "--";
+        // echo "--TOTAL " . $row["total"] . "--";
+        // echo "--SALDO " . $row["saldo"] . "--";
+        // echo "--REINTEGRO " . $row["reintegro"] . "--";
+      } else {
+
+        
+        $numeroForm = $row["number_form_temp"];
+        $total = $row["total"];
+        $import = $row["importe"];
+        $saldo = $row["saldo"];
+        $saldo = $row["reintegro"];
+
+
+        
+        
+      }
+      $numeroForm = $row["number_form_temp"];
+
+     
+    }
+
+
+    ?>
 
 
 
